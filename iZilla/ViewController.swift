@@ -11,19 +11,31 @@ import WebKit
 
 class ViewController: UIViewController {
     
-    let webView = WKWebView()
-    
-    override func loadView() {
-        webView.navigationDelegate = self
-        view = webView
-    }
+    @IBOutlet weak var webView: WKWebView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .refresh, target: webView, action: #selector(webView.reload))
+        webView.navigationDelegate = self
         webView.allowsBackForwardNavigationGestures = true
         let url = URL(string: "https://www.google.com")!
         webView.load(URLRequest(url: url))
+    }
+    
+    @IBAction func back() {
+        webView.goBack()
+    }
+    
+    @IBAction func forward() {
+        webView.goForward()
+    }
+    
+    @IBAction func refresh() {
+        webView.reload()
+    }
+    
+    @IBAction func openTabs() {
+        let tabsViewController = UITableViewController()
+        navigationController?.pushViewController(tabsViewController, animated: true)
     }
     
 }

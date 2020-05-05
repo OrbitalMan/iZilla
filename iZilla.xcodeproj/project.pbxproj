@@ -14,6 +14,7 @@
 		8527FCA924617BAE00686166 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8527FCA824617BAE00686166 /* Assets.xcassets */; };
 		8527FCAC24617BAE00686166 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8527FCAA24617BAE00686166 /* LaunchScreen.storyboard */; };
 		8527FCB724617BAE00686166 /* iZillaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8527FCB624617BAE00686166 /* iZillaTests.swift */; };
+		8527FCC32461E7DE00686166 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8527FCC22461E7DE00686166 /* WebKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,6 +39,7 @@
 		8527FCB224617BAE00686166 /* iZillaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iZillaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8527FCB624617BAE00686166 /* iZillaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iZillaTests.swift; sourceTree = "<group>"; };
 		8527FCB824617BAE00686166 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8527FCC22461E7DE00686166 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -45,6 +47,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8527FCC32461E7DE00686166 /* WebKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -64,6 +67,7 @@
 				8527FC9E24617BA900686166 /* iZilla */,
 				8527FCB524617BAE00686166 /* iZillaTests */,
 				8527FC9D24617BA900686166 /* Products */,
+				8527FCC12461E7DE00686166 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -97,6 +101,14 @@
 				8527FCB824617BAE00686166 /* Info.plist */,
 			);
 			path = iZillaTests;
+			sourceTree = "<group>";
+		};
+		8527FCC12461E7DE00686166 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				8527FCC22461E7DE00686166 /* WebKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
