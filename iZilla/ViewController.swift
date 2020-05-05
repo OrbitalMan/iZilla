@@ -7,14 +7,27 @@
 //
 
 import UIKit
+import WebKit
 
 class ViewController: UIViewController {
-
+    
+    let webView = WKWebView()
+    
+    override func loadView() {
+        webView.navigationDelegate = self
+        view = webView
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .refresh, target: webView, action: #selector(webView.reload))
+        webView.allowsBackForwardNavigationGestures = true
+        let url = URL(string: "https://www.google.com")!
+        webView.load(URLRequest(url: url))
     }
-
-
+    
 }
 
+extension ViewController: WKNavigationDelegate {
+    
+}
