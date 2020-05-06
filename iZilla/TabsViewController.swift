@@ -69,16 +69,25 @@ class TabsViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView,
                             canEditRowAt indexPath: IndexPath) -> Bool {
-        return tabs.count > 1
+        if tabs.count < 2, tabs.last?.urlStack.isEmpty ?? true {
+            return false
+        }
+        return true
     }
     
     override func tableView(_ tableView: UITableView,
                             commit editingStyle: UITableViewCell.EditingStyle,
                             forRowAt indexPath: IndexPath) {
         if (editingStyle == .delete) {
-            guard
-                tabs.indices.contains(indexPath.row),
-                tabs.count > 1 else { return }
+            guard tabs.count > 1 else
+            {
+                tabs = [WebTab(title: "Empty", urlStack: [])]
+                Storage.webTabs = tabs
+                Storage.currentTabIndex = 0
+                tableView.reloadData()
+                webViewController?.reset()
+                return
+            }
             tabs.remove(at: indexPath.row)
             let previousTabIndex = Storage.currentTabIndex
             var newCurrentIndex = previousTabIndex
