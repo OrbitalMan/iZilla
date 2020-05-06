@@ -19,24 +19,7 @@ class WebViewController: UIViewController {
         super.viewDidLoad()
         urlField.delegate = self
         reset()
-        let currentTabIndex = Storage.currentTabIndex
-        let tabs = Storage.webTabs
-        if tabs.isEmpty {
-            let url = URL(string: "https://www.google.com")!
-            webView.load(URLRequest(url: url))
-        } else {
-            let tab: WebTab
-            if tabs.indices.contains(currentTabIndex) {
-                tab = tabs[currentTabIndex]
-            } else {
-                let lastIndex = tabs.count-1
-                tab = tabs[lastIndex]
-                Storage.currentTabIndex = lastIndex
-            }
-            if let url = tab.urlStack.last {
-                webView.load(URLRequest(url: url))
-            }
-        }
+        loadCurrentTab()
     }
     
     override func viewDidLayoutSubviews() {
@@ -47,7 +30,7 @@ class WebViewController: UIViewController {
     func reset() {
         webView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = false
         webView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = false
-        webView.topAnchor.constraint(equalTo: view.topAnchor).isActive = false
+        webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = false
         webView.bottomAnchor.constraint(equalTo: toolBar.topAnchor).isActive = false
         webView.removeFromSuperview()
         
@@ -56,7 +39,7 @@ class WebViewController: UIViewController {
         webView.translatesAutoresizingMaskIntoConstraints = false
         webView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         webView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        webView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
         webView.bottomAnchor.constraint(equalTo: toolBar.topAnchor).isActive = true
         
         webView.navigationDelegate = self
@@ -84,12 +67,61 @@ class WebViewController: UIViewController {
         navigationController?.pushViewController(tabsViewController, animated: true)
     }
     
+    func loadCurrentTab() {
+        let currentTabIndex = Storage.currentTabIndex
+        let tabs = Storage.webTabs
+        if tabs.isEmpty {
+            let url = URL(string: "https://www.google.com")!
+            webView.load(URLRequest(url: url))
+        } else {
+            let tab: WebTab
+            if tabs.indices.contains(currentTabIndex) {
+                tab = tabs[currentTabIndex]
+            } else {
+                let lastIndex = tabs.count-1
+                tab = tabs[lastIndex]
+                Storage.currentTabIndex = lastIndex
+            }
+            if let url = tab.urlStack.last {
+                webView.load(URLRequest(url: url))
+            }
+        }
+    }
+    
+    func updateCurrentTab() {
+        var title = webView.title ?? ""
+        if title.isEmpty {
+            title = webView.url?.host ?? "Empty"
+        }
+        var urlStack: [URL] = []
+        if let url = webView.url {
+            urlStack.append(url)
+        }
+        let newCurrentTab = WebTab(title: title, urlStack: urlStack)
+        var tabs = Storage.webTabs
+        if tabs.isEmpty {
+            tabs.append(newCurrentTab)
+            Storage.webTabs = tabs
+        } else {
+            let index = Storage.currentTabIndex
+            tabs.remove(at: index)
+            tabs.insert(newCurrentTab, at: index)
+            Storage.webTabs = tabs
+        }
+        
+    }
+    
 }
 
 extension WebViewController: WKNavigationDelegate {
     
     func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
         urlField.text = webView.url?.absoluteString ?? ""
+        updateCurrentTab()
+    }
+    
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        updateCurrentTab()
     }
     
 }
@@ -97,9 +129,11 @@ extension WebViewController: WKNavigationDelegate {
 extension WebViewController: UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        guard
-            let text = urlField.text,
-            let url = URL(string: text) else { return false }
+        var link = urlField.text ?? ""
+        if !link.starts(with: "http") {
+            link = "http://" + link
+        }
+        guard let url = URL(string: link) else { return false }
         webView.load(URLRequest(url: url))
         textField.endEditing(true)
         return true

@@ -20,33 +20,8 @@ class TabsViewController: UITableViewController {
         tableView.register(UITableViewCell.self,
                            forCellReuseIdentifier: cellId)
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addTab))
+        webViewController?.updateCurrentTab()
         tabs = Storage.webTabs
-        
-        if let webViewController = webViewController {
-            let title = webViewController.webView.title ?? webViewController.webView.url?.host ?? "Empty"
-            var urlStack: [URL] = []
-            if let url = webViewController.webView.url {
-                urlStack.append(url)
-            }
-            let newTab = WebTab(title: title,
-                                urlStack: urlStack)
-            if tabs.isEmpty {
-                tabs.append(newTab)
-                Storage.webTabs = tabs
-            } else {
-                let currentTabIndex = Storage.currentTabIndex
-                let currentTab = tabs[currentTabIndex]
-                let webView = webViewController.webView
-                if  let url = webView.url,
-                    url != currentTab.urlStack.last,
-                    webView.title != currentTab.title
-                {
-                    tabs.remove(at: currentTabIndex)
-                    tabs.insert(newTab, at: currentTabIndex)
-                    Storage.webTabs = tabs
-                }
-            }
-        }
     }
     
     @objc func addTab() {
@@ -113,13 +88,13 @@ class TabsViewController: UITableViewController {
             newCurrentIndex = min(max(0, newCurrentIndex), tabs.count-1)
             if newCurrentIndex != previousTabIndex {
                 Storage.currentTabIndex = newCurrentIndex
-                let newCurrentTab = tabs[newCurrentIndex]
-                let newURL = newCurrentTab.urlStack.last
-                if newURL != webViewController?.webView.url {
-                    webViewController?.reset()
-                    if let url = newURL {
-                        webViewController?.webView.load(URLRequest(url: url))
-                    }
+            }
+            let newCurrentTab = tabs[newCurrentIndex]
+            let newURL = newCurrentTab.urlStack.last
+            if newURL != webViewController?.webView.url {
+                webViewController?.reset()
+                if let url = newURL {
+                    webViewController?.webView.load(URLRequest(url: url))
                 }
             }
             Storage.webTabs = tabs
